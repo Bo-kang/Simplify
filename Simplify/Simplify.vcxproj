@@ -141,6 +141,9 @@
   <ItemGroup>
     <ClCompile Include="DouglasPeucker.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Entity.hpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
