@@ -1,6 +1,7 @@
 
 #include <math.h>
 #include <vector>
+#include <stack>
 #include "Entity.hpp"
 
 
@@ -25,14 +26,14 @@ double PerpendicularDistance( const Point & curPoint ,const Point & startPoint, 
 
 
 /*
-	@ Desc : DouglasPeucker Polyline  Simplify logic using DFS
+	@ Desc : DouglasPeucker Polyline  Simplify logic using Recursive
 	@ Author : Bo-kang (ebfks0301@gmail.com)
 	@ Param1 : Target Polyline
 	@ Param2 : Simplify Factor ( Epsilon )
 	@ Param3 : Result 
 	@ Return : true - Done  / false - Unknown Error
 */
-bool DouglasPeucker_DFS( const std::vector<Point> & polyLine, const int & epsilon, std::vector<Point>& result , int index = 0, int end = - 1 )
+bool DouglasPeucker_REC( const std::vector<Point> & polyLine, const int & epsilon, std::vector<Point>& result , int index = 0, int end = - 1 )
 {
 	double maxDistance = 0;
 	int nextIndex = 0;
@@ -50,16 +51,67 @@ bool DouglasPeucker_DFS( const std::vector<Point> & polyLine, const int & epsilo
 			nextIndex = i ;
 		}
 	}
-
 	if (maxDistance > epsilon)
 	{
-		DouglasPeucker_DFS( polyLine, epsilon, result, 0, nextIndex ) ;
-		DouglasPeucker_DFS( polyLine, epsilon, result, nextIndex, end ) ;
+		DouglasPeucker_REC( polyLine, epsilon, result, 0, nextIndex ) ;
+		DouglasPeucker_REC( polyLine, epsilon, result, nextIndex, end ) ;
 	}
 	else
 	{
 		result.emplace_back(polyLine[index], polyLine[end]);
 	}
+	return true;
+}
 
+
+
+/*
+	@ Desc : DouglasPeucker Polyline  Simplify logic using Stack
+	@ Author : Bo-kang (ebfks0301@gmail.com)
+	@ Param1 : Target Polyline
+	@ Param2 : Simplify Factor ( Epsilon )
+	@ Param3 : Result
+	@ Return : true - Done  / false - Unknown Error
+*/
+bool DouglasPeucker_Stack(const std::vector<Point>& polyLine, const int& epsilon, std::vector<Point>& result, int index = 0, int end = -1)
+{
+	double maxDistance = 0;
+	std::stack<std::pair<Point, Point>> afStack;
+	afStack.push(std::pair<Point, Point>(polyLine[0], polyLine[polyLine.size() - 1]));
+
+	int anchorIdx = 0;
+	int floaterIdx = polyLine.size() - 1;
+
+	while (!afStack.empty())
+	{
+		Point Anchor = afStack.top().first ;
+		Point Floater = afStack.top().second ;
+		double curDistance = 0;
+		double maxDistance = 0;
+		int targIdx = 0;
+		for (int i = anchorIdx; i < floaterIdx; i++)
+		{
+			curDistance = PerpendicularDistance(polyLine[i], afStack.top().first, afStack.top().second);
+			if (maxDistance < curDistance)
+			{
+				targIdx = i;
+				maxDistance = curDistance;
+			}
+		}
+
+		if (epsilon >= maxDistance)
+		{
+			result.push_back(afStack.top().first);
+			result.push_back(afStack.top().second);
+			afStack.pop();
+		}
+		else
+		{
+			afStack.pop();
+			afStack.push(std::pair<Point, Point>(polyLine[anchorIdx], polyLine[targIdx]));
+			afStack.push(std::pair<Point, Point>(polyLine[targIdx], polyLine[floaterIdx]));
+		}
+
+	}
 	return true;
 }
