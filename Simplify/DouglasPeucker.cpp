@@ -33,7 +33,7 @@ double PerpendicularDistance( const Point & curPoint ,const Point & startPoint, 
 	@ Param3 : Result 
 	@ Return : true - Done  / false - Unknown Error
 */
-bool DouglasPeucker_REC( const std::vector<Point> & polyLine, const int & epsilon, std::vector<Point>& result , int index = 0, int end = - 1 )
+bool DouglasPeucker_REC( const std::vector<Point > & polyLine, const int & epsilon, std::vector<Point>& result , int index = 0, int end = - 1 )
 {
 	double maxDistance = 0;
 	int nextIndex = 0;
@@ -58,7 +58,8 @@ bool DouglasPeucker_REC( const std::vector<Point> & polyLine, const int & epsilo
 	}
 	else
 	{
-		result.emplace_back(polyLine[index], polyLine[end]);
+		result.emplace_back(polyLine[index]);
+		result.emplace_back(polyLine[end]);
 	}
 	return true;
 }
@@ -76,22 +77,22 @@ bool DouglasPeucker_REC( const std::vector<Point> & polyLine, const int & epsilo
 bool DouglasPeucker_Stack(const std::vector<Point>& polyLine, const int& epsilon, std::vector<Point>& result, int index = 0, int end = -1)
 {
 	double maxDistance = 0;
-	std::stack<std::pair<Point, Point>> afStack;
-	afStack.push(std::pair<Point, Point>(polyLine[0], polyLine[polyLine.size() - 1]));
+	std::stack<std::pair<int , int>> afStack;
+	afStack.push(std::pair<int, int>(0, polyLine.size() - 1));
 
 	int anchorIdx = 0;
 	int floaterIdx = polyLine.size() - 1;
 
 	while (!afStack.empty())
 	{
-		Point Anchor = afStack.top().first ;
-		Point Floater = afStack.top().second ;
+		anchorIdx = afStack.top().first ;
+		floaterIdx = afStack.top().second ;
 		double curDistance = 0;
 		double maxDistance = 0;
 		int targIdx = 0;
 		for (int i = anchorIdx; i < floaterIdx; i++)
 		{
-			curDistance = PerpendicularDistance(polyLine[i], afStack.top().first, afStack.top().second);
+			curDistance = PerpendicularDistance(polyLine[i], polyLine[anchorIdx], polyLine[floaterIdx]);
 			if (maxDistance < curDistance)
 			{
 				targIdx = i;
@@ -101,17 +102,16 @@ bool DouglasPeucker_Stack(const std::vector<Point>& polyLine, const int& epsilon
 
 		if (epsilon >= maxDistance)
 		{
-			result.push_back(afStack.top().first);
-			result.push_back(afStack.top().second);
+			result.push_back(polyLine[anchorIdx]);
+			result.push_back(polyLine[floaterIdx]);
 			afStack.pop();
 		}
 		else
 		{
 			afStack.pop();
-			afStack.push(std::pair<Point, Point>(polyLine[anchorIdx], polyLine[targIdx]));
-			afStack.push(std::pair<Point, Point>(polyLine[targIdx], polyLine[floaterIdx]));
+			afStack.push(std::pair<int, int>(anchorIdx, targIdx));
+			afStack.push(std::pair<int, int>(targIdx, floaterIdx));
 		}
-
 	}
 	return true;
 }

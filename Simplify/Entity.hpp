@@ -10,7 +10,7 @@ struct Point {
 		y = 0;
 	}
 
-	Point(double x, double y)
+	Point(const double &x, const double &y)
 	{
 		this->x = x;
 		this->y = y;
