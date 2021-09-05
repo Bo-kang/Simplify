@@ -1,8 +1,6 @@
+#include "DouglasPeucker.h"
 
-#include <math.h>
-#include <vector>
-#include <stack>
-#include "Entity.hpp"
+
 
 
 double GetLength( const Point &A, const Point &B )
@@ -13,7 +11,7 @@ double GetLength( const Point &A, const Point &B )
 /*
 	@ From - https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 */
-double PerpendicularDistance( const Point & curPoint ,const Point & startPoint, const Point & endPoint )
+double simplify::PerpendicularDistance( const Point & curPoint ,const Point & startPoint, const Point & endPoint )
 {
 	double numerator = abs ( ( ( endPoint.x - startPoint.x ) * ( startPoint.y - curPoint.y ) ) - ( ( startPoint.x - curPoint.x ) * ( endPoint.y - startPoint.y ) ) ) ;
 	double denominator = sqrt( ( ( endPoint.x - startPoint.x) * (endPoint.x - startPoint.x) ) + ( (endPoint.y - startPoint.y) * (endPoint.y - startPoint.y) ) ) ;
@@ -33,7 +31,7 @@ double PerpendicularDistance( const Point & curPoint ,const Point & startPoint, 
 	@ Param3 : Result 
 	@ Return : true - Done  / false - Unknown Error
 */
-bool DouglasPeucker_REC( const std::vector<Point > & polyLine, const int & epsilon, std::vector<Point>& result , int index = 0, int end = - 1 )
+bool simplify::DouglasPeucker_REC( const std::vector<Point > & polyLine, const int & epsilon, std::vector<Point>& result , int index , int end )
 {
 	double maxDistance = 0;
 	int nextIndex = 0;
@@ -74,7 +72,7 @@ bool DouglasPeucker_REC( const std::vector<Point > & polyLine, const int & epsil
 	@ Param3 : Result
 	@ Return : true - Done  / false - Unknown Error
 */
-bool DouglasPeucker_Stack(const std::vector<Point>& polyLine, const int& epsilon, std::vector<Point>& result, int index = 0, int end = -1)
+bool simplify::DouglasPeucker_Stack(const std::vector<Point>& polyLine, const int& epsilon, std::vector<Point>& result, int index, int end )
 {
 	double maxDistance = 0;
 	std::stack<std::pair<int , int>> afStack;
